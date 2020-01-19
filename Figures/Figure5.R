@@ -1,6 +1,6 @@
 library("GenomicRanges")
 
-feature.matrix <- as.matrix(read.table(file="AllChIPseqFeatureMatrix_v2.txt",sep="\t",head=T,row.names=1))
+feature.matrix <- as.matrix(read.table(file="data/AllChIPseqFeatureMatrix.txt",sep="\t",head=T,row.names=1))
 
 library(NMF)
 png(file="ChIPseq_SElets_Heatmap_ESC_S7D.png",width=12,height=6,units='in',res=300)
@@ -18,7 +18,7 @@ dev.off()
 
 # now Epi too
 
-feature.matrixEpi <- as.matrix(read.table("AllChIPseqFeatureMatrix_Epi.txt",sep="\t",head=T,row.names=1))
+feature.matrixEpi <- as.matrix(read.table("data/AllChIPseqFeatureMatrix_Epi.txt",sep="\t",head=T,row.names=1))
 
 png(file="ChIPseq_SElets_Heatmap_EpiLCplusA.png",width=8,height=4,units='in',res=300)
 aheatmap(feature.matrixEpi[1:3,5:8],Rowv=NA,Colv=NA,scale="col")
@@ -45,7 +45,8 @@ for(i in 1:length(chipexofiles)){
 }
 
 chipexo.matrix <- t(sapply(c("PU","DM","PM"),function(x)colMeans(chipexo.rpkm[which(chipexo.rpkm$class==x),5:7])))
-
+chipexo.matrix <- as.matrix(read.table("data/AllChIPseqFeatureMatrix_chipexo.txt",sep="\t",head=T,row.names=1))
+			   
 png(file="ChIPexo_SElets_Heatmap.png",width=6,height=6,units='in',res=300)
 aheatmap(chipexo.matrix,Rowv=NA,Colv=NA,scale="col")
 dev.off()
