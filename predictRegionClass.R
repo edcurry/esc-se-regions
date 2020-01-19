@@ -2,9 +2,11 @@
 
 library(ShortRead)
 
+# for preprocessing data
 # only use Dnmts, Tets and H3K4me3 ChIP
-chip.files <- read.table("predictionChIPseqFiles.txt",sep=",",head=T)
-chip.files <- chip.files[!is.na(as.character(chip.files$File)),]
+chip.files <- read.table("data/predictionChIPseqTracks.txt",sep=",",head=T)
+enhancelet.matrix <- read.table("data/AllChIPseqFeatureMatrix_v3.txt",sep="\t",head=T,row.names=1)
+enhancelet.matrix <- [,apply(chip.files,1,function(x)paste(as.character(x),collapse="."))]
 
 # define regions
 
@@ -24,30 +26,6 @@ featureType <- c(rep("DM",length(DM.gr)),rep("PM",length(PM.gr)),rep("PU",length
 enhancelet.matrix <- array(NA,dim=c(length(enhancelet.gr),nrow(chip.files)))
 colnames(enhancelet.matrix) <- paste(as.character(chip.files$Cell),"-",as.character(chip.files$ChIP),sep="")
 
-# for each ChIP file, compute rpkm, normalize to input, add to matrix
-
-for(i in 1:nrow(chip.files)){
-	if(!is.na(as.character(chip.files$File)[i])){
-	cat(paste("generating RPKMs for sample ",i,": ",as.character(chip.files$Cell)[i],"-",as.character(chip.files$ChIP)[i],"\n",sep=""))
-	cat("reading ChIP bam \n")
-	this.ChIP.reads <- readGAlignments(file=as.character(chip.files$File)[i],param=ScanBamParam())
-	cat("counting overlaps \n")
-	this.ChIP.counts <- summarizeOverlaps(features=enhancelet.gr,reads=this.ChIP.reads)#,mode="IntersectionNotEmpty")
-	this.ChIP.rpkm <- (1000*assay(this.ChIP.counts)*1e6/length(this.ChIP.reads))/width(enhancelet.gr)
-	this.ChIP.logFC <- log(this.ChIP.rpkm+1,base=2)
-	
-	if(!is.na(as.character(chip.files$Input)[i])){
-		cat("reading input bam \n")
-		this.input.reads <- readGAlignments(file=as.character(chip.files$Input)[i],param=ScanBamParam())
-	        cat("counting overlaps \n")
-		this.input.counts <- summarizeOverlaps(features=enhancelet.gr,reads=this.input.reads)#,mode="IntersectionNotEmpty")
-		this.input.rpkm <- (1000*assay(this.input.counts)*1e6/length(this.input.reads))/width(enhancelet.gr)
-		this.ChIP.logFC <- log(((this.ChIP.rpkm+1)/(this.input.rpkm+1)),base=2)
-	}
-	
-	enhancelet.matrix[,i] <- this.ChIP.logFC
-	}
-}
 
 # add CpG density to enhancelet.matrix
 
