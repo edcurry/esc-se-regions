@@ -13,7 +13,7 @@ dev.off()
 
 png(file="ChIPseq_SElets_Heatmap_ESC_Fig5e.png",width=12,height=6,units='in',res=300)
 # row order?
-#aheatmap(feature.matrix[1:3,c(20,3,6,7,8,4,0,1,2,9,10,11,12,14,21)+1],Rowv=NA,Colv=NA,scale="col")
+aheatmap(feature.matrix[1:3,c(20,3,6,7,8,4,0,1,2,9,10,11,12,14,21)+1],Rowv=NA,Colv=NA,scale="col")
 dev.off()
 
 # now Epi too
